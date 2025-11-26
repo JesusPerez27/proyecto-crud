@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  postgres-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: crud_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+
+  api-service:
+    build: ./api-service
+    environment:
+      DB_HOST: postgres-db
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: crud_db
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres-db
+
+  nginx-gateway:
+    build: ./nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - api-service
